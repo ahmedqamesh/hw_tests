@@ -48,9 +48,7 @@ class Plotting(object):
         self.log.info('Plotting initialized')
     
     def plot_voltage_dcconverter(self, dir=None , file=None, output="output", PdfPages=None, directory=None, ylim=4000, title="title", logo=True):
-        im = image.imread(directory + dir + 'icon.png')
-        
-        col_row = plt.cm.BuPu(np.linspace(0.3, 0.9, 5))
+        col_row = plt.cm.BuPu(np.linspace(0, 0.9, 5))
         v_sin = []
         v_cin = []
         v_cout = []
@@ -70,7 +68,7 @@ class Plotting(object):
                 I_sin = np.append(I_sin, float(row[3]) * f)
                 I_sin_err = np.append(I_sin_err, float(row[4]) * f)
                 
-                I_cout = np.append(I_cout, float(row[5]) * f)
+                I_cout = np.append(I_cout, float(row[6]) * f)
                 I_cout_err = np.append(I_cout_err, float(row[6]) * f)
         fig = plt.figure()
         gs = gridspec.GridSpec(2, 1, height_ratios=[2, 2])
@@ -81,14 +79,14 @@ class Plotting(object):
         ax.errorbar(v_sin, v_cout, yerr=0.0, color=col_row[3], fmt='-p' , markerfacecolor='white', markeredgecolor=col_row[3], ms=4, label="Output Voltage from the DC/DC module")
         # ax.plot(v_sin, v_cin , color=col_row[0], label="Input Voltage to the module")
         ax.plot(v_sin, v_cout, color=col_row[3])
-        ax.text(0.95, 0.35, dir[:-1], fontsize=8,
-                horizontalalignment='right', verticalalignment='top', transform=ax.transAxes,
-                bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.2))    
+        #ax.text(0.95, 0.35, dir[:-1], fontsize=8,
+        #        horizontalalignment='right', verticalalignment='top', transform=ax.transAxes,
+        #        bbox=dict(boxstyle='round', facecolor='White', alpha=0.2))    
         ax.ticklabel_format(useOffset=False)
         ax.grid(True)
         ax.legend(loc="upper left", prop={'size': 8})
-        ax.set_ylabel("Voltage [V]")
-        ax.set_ylim([-0.5, 5])
+        ax.set_ylabel("Output Voltage [V]")
+        ax.set_ylim([-0.5, 6])
         ax.autoscale(enable=True, axis='x', tight=None)
         ax.set_title(title, fontsize=10)
         
@@ -99,11 +97,15 @@ class Plotting(object):
         ax1.plot(v_sin, I_cout, color=col_row[3])
         ax1.grid(True)
         ax1.set_xlabel("Power Supply Voltage $U_S$ [V]")
-        ax1.set_ylabel(r'Current I [mA]')
+        ax1.set_ylabel(r'Output Current I [mA]')
         ax1.set_ylim([-10, ylim])
         ax1.legend(loc="upper left", prop={'size': 8})
-        fig.figimage(im, 5, 5, zorder=1, alpha=0.08, resize=False)
+        try:
+            im = image.imread(directory + dir + 'icon.png')
+            fig.figimage(im, 5, 5, zorder=1, alpha=0.08, resize=False)
+        except:pass       
         plt.tight_layout()
+        print(directory,dir,output)
         plt.savefig(directory + dir + output, bbox_inches='tight')
         PdfPages.savefig()
         
